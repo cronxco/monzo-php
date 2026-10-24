@@ -118,6 +118,7 @@ class Model implements Jsonable, Arrayable, JsonSerializable, ArrayAccess
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toJsonArray();
@@ -241,6 +242,7 @@ class Model implements Jsonable, Arrayable, JsonSerializable, ArrayAccess
      * The return value will be casted to boolean if non-boolean was returned.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->attributes);
@@ -255,6 +257,7 @@ class Model implements Jsonable, Arrayable, JsonSerializable, ArrayAccess
      * @return mixed Can return all value types.
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->getAttribute($offset);
@@ -272,6 +275,7 @@ class Model implements Jsonable, Arrayable, JsonSerializable, ArrayAccess
      * @return void
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         //
@@ -286,6 +290,7 @@ class Model implements Jsonable, Arrayable, JsonSerializable, ArrayAccess
      * @return void
      * @since 5.0.0
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         //
