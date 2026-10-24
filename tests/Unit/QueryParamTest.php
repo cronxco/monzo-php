@@ -17,11 +17,13 @@ class QueryParamTest extends TestCase
 
         $result = $params->build();
 
-        $this->assertTrue(str_contains($result, [
+        foreach ([
             'foo=bar',
             'baz=abc',
             'abc=123',
-        ]));
+        ] as $expected) {
+            $this->assertStringContainsString($expected, $result);
+        }
     }
 
     public function testUrlEncode()
@@ -34,11 +36,13 @@ class QueryParamTest extends TestCase
 
         $result = $params->build();
 
-        $this->assertTrue(str_contains($result, [
+        foreach ([
             'foo=bar',
             'utf8=%E2%9C%93',
             'abc=123',
-        ]));
+        ] as $expected) {
+            $this->assertStringContainsString($expected, $result);
+        }
     }
 
     public function testArrays()
@@ -51,11 +55,13 @@ class QueryParamTest extends TestCase
 
         $result = $params->build();
 
-        $this->assertTrue(str_contains($result, [
+        foreach ([
             'expand[]=merchant',
             'expand[]=transactions',
             'foobar[]=bar',
             'abc=123',
-        ]));
+        ] as $expected) {
+            $this->assertStringContainsString($expected, $result);
+        }
     }
 }

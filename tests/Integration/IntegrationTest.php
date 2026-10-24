@@ -10,6 +10,7 @@ use Amelia\Monzo\Models\Account;
 use GuzzleHttp\Client as Guzzle;
 use Illuminate\Support\Collection;
 use Amelia\Monzo\Models\Transaction;
+use Amelia\Monzo\Exceptions\InvalidTokenException;
 
 class IntegrationTest extends TestCase
 {
@@ -29,7 +30,7 @@ class IntegrationTest extends TestCase
         $accounts = $monzo->as(static::$token)->accounts();
 
         $this->assertInstanceOf(Collection::class, $accounts);
-        $this->assertContainsOnly(Account::class, $accounts);
+        $this->assertContainsOnlyInstancesOf(Account::class, $accounts);
 
         $this->assertCount(2, $accounts);
     }
@@ -47,7 +48,7 @@ class IntegrationTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $transactions);
 
-        $this->assertContainsOnly(Transaction::class, $transactions);
+        $this->assertContainsOnlyInstancesOf(Transaction::class, $transactions);
     }
 
     public function testDefaultTransactionsEndpoint()
@@ -63,7 +64,7 @@ class IntegrationTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $transactions);
 
-        $this->assertContainsOnly(Transaction::class, $transactions);
+        $this->assertContainsOnlyInstancesOf(Transaction::class, $transactions);
     }
 
     public function testTransactionsEndpointLimiting()
@@ -81,7 +82,7 @@ class IntegrationTest extends TestCase
 
         $this->assertCount(5, $transactions);
 
-        $this->assertContainsOnly(Transaction::class, $transactions);
+        $this->assertContainsOnlyInstancesOf(Transaction::class, $transactions);
     }
 
     public function testTransactionsEndpointLimitingWithoutAccount()
@@ -99,7 +100,7 @@ class IntegrationTest extends TestCase
 
         $this->assertCount(5, $transactions);
 
-        $this->assertContainsOnly(Transaction::class, $transactions);
+        $this->assertContainsOnlyInstancesOf(Transaction::class, $transactions);
     }
 
     public function testSingleTransaction()
@@ -120,11 +121,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals($transaction->id, $result->id);
     }
 
-    /**
-     * @expectedException \Amelia\Monzo\Exceptions\InvalidTokenException
-     */
     public function testInvalidAccessTokens()
     {
+        $this->expectException(InvalidTokenException::class);
+
         VCR::insertCassette('invalid_access_token');
 
         $monzo = new Monzo(new Client(new Guzzle));
@@ -132,11 +132,10 @@ class IntegrationTest extends TestCase
         $monzo->as('bad-access-token')->accounts();
     }
 
-    /**
-     * @expectedException \Amelia\Monzo\Exceptions\InvalidTokenException
-     */
     public function testExpiredAccessToken()
     {
+        $this->expectException(InvalidTokenException::class);
+
         VCR::insertCassette('invalid_access_token');
 
         $monzo = new Monzo(new Client(new Guzzle));
@@ -170,7 +169,7 @@ class IntegrationTest extends TestCase
         $this->assertEquals('GBP', $balance->currency);
     }
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // set these when adding new tests to get a real response
         static::$integrationToken = getenv('MONZO_TEST_ACCESS_TOKEN');
